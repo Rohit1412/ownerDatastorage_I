@@ -1,0 +1,57 @@
+import mysql.connector
+from mysql.connector import Error
+
+# MySQL database configuration
+db_config = {
+    'user': 'root',
+    'password': 'Rohit@1122',
+    'host': 'localhost',
+    'database': 'owner_db'
+}
+
+try:
+    # Establishing the database connection
+    connection = mysql.connector.connect(**db_config)
+
+    if connection.is_connected():
+        print("Connected to MySQL database")
+
+        cursor = connection.cursor()
+
+        # Create a new table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS owners (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(100),
+                age INT,
+                gender VARCHAR(10),
+                restaurant_name VARCHAR(100)
+            );
+        ''')
+
+        # Insert data into the table
+        insert_query = '''
+            INSERT INTO owners (name, age, gender, restaurant_name)
+            VALUES (%s, %s, %s, %s);
+        '''
+        data = ("John Doe", 45, "Male", "Doe's Diner")
+        cursor.execute(insert_query, data)
+        connection.commit()
+
+        print("Data inserted successfully")
+
+        # Fetch and display the data
+        cursor.execute("SELECT * FROM owners;")
+        records = cursor.fetchall()
+
+        print("Fetched Data:")
+        for record in records:
+            print(record)
+
+        # Close the cursor and connection
+        cursor.close()
+        connection.close()
+        print("MySQL connection is closed")
+
+except Error as e:
+    print(f"Error while connecting to MySQL: {e}")
